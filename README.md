@@ -212,7 +212,42 @@ They call the same `syncServer()` as the slash command — there is no second
 implementation. The CLI connects with the `Guilds` intent only, so it works
 even if the privileged Server Members intent has not been enabled yet.
 
-### Deploying to a server
+### Deploying to Railway
+
+Railway builds straight from the GitHub repository — no files to upload.
+
+1. **railway.com** → sign in with GitHub
+2. **New Project → Deploy from GitHub repo** → pick this repository
+3. **Variables** tab → add `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`
+4. **Settings → Volumes** → add a volume mounted at `/app/data`
+
+[`railway.json`](railway.json) pins the build and start commands so the
+deployment does not depend on auto-detection.
+
+**Step 4 is not optional.** Railway's filesystem is ephemeral: without a
+volume, `data/state.json` is wiped on every redeploy. Nothing breaks — setup
+falls back to matching channels by name and rebuilds it — but the bot forgets
+which channel is which every time you ship, which makes the logs confusing and
+the reconciliation slower than it needs to be.
+
+Redeploys happen automatically on every push to `main`.
+
+### Deploying to a Pterodactyl-style panel
+
+Panels with a Node egg can clone the repository themselves — no uploads either:
+
+| Variable | Value |
+|---|---|
+| `GIT_ADDRESS` | this repository's `.git` URL |
+| `BRANCH` | `main` |
+| `AUTO_UPDATE` | `1` |
+| `MAIN_FILE` | `index.js` |
+
+Then create `.env` in the panel's file manager. `dist/` is committed for
+exactly this case: those eggs run `npm install` and a start command, never a
+TypeScript build.
+
+### Deploying to a plain server
 
 ```bash
 npm ci --omit=dev      # runtime dependencies only
