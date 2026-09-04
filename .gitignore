@@ -1,0 +1,26 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# runtime state (environment specific — contains resolved Discord IDs)
+data/state.json
+
+# build output is committed on purpose: several hosts run the code without a
+# build step, and shipping dist/ makes the repository deployable everywhere.
+
+# dependencies
+node_modules/
+
+# logs
+*.log
+npm-debug.log*
+
+# editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+deploy/
+deploy.zip

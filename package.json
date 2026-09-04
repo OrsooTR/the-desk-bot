@@ -1,0 +1,44 @@
+{
+  "name": "the-desk-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "THE DESK — Discord infrastructure bot for a professional international trading research community.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "start:panel": "npm run build && node dist/index.js",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "deploy": "tsx src/scripts/deployCommands.ts",
+    "deploy:prod": "node dist/scripts/deployCommands.js",
+    "verify": "tsx src/scripts/verifyBlueprint.ts",
+    "setup": "tsx src/scripts/setupServer.ts",
+    "setup:dry": "tsx src/scripts/setupServer.ts --dry-run",
+    "migrate:types": "tsx src/scripts/migrateChannelTypes.ts",
+    "bundle": "tsx src/scripts/bundle.ts",
+    "bundle:offline": "tsx src/scripts/bundle.ts --offline",
+    "check": "npm run typecheck && npm run lint && npm run verify"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/node": "^22.8.1",
+    "eslint": "^9.13.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
