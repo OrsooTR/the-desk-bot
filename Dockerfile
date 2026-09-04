@@ -17,6 +17,9 @@ RUN npm prune --omit=dev
 FROM node:22-alpine AS runtime
 WORKDIR /app
 
+# su-exec drops privileges without the signal-handling problems of su.
+RUN apk add --no-cache su-exec
+
 ENV NODE_ENV=production
 
 COPY --from=build /app/node_modules ./node_modules
@@ -32,8 +35,11 @@ COPY --from=build /app/package.json ./package.json
 # to provide; where it is mounted from is the host's business.
 RUN mkdir -p /app/data && chown -R node:node /app/data
 
-# Never run as root.
-USER node
+# Runs as root only long enough to fix volume ownership; docker-entrypoint.sh
+# drops to the unprivileged 'node' user before exec'ing the bot itself.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Only needed on platforms that require a bound port; harmless otherwise.
 EXPOSE 8080

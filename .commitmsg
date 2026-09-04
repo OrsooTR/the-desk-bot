@@ -1,0 +1,27 @@
+Fix voice rooms failing on Railway: state writes must never break lookups
+
+The join-to-create voice hubs did nothing on Railway. Root cause was not the
+voice code but the state store.
+
+findChannel and findCategory write to state.json as a side effect of reading:
+that is how the server heals itself after a manual rename. Railway mounts its
+volume root-owned while the container runs as the unprivileged node user, so
+every one of those writes raised EACCES, and the exception propagated out of
+what the caller believed was a read. Channel resolution therefore threw inside
+onVoiceStateUpdate, the ready handler and the Discord log transport.
+
+Two fixes:
+
+- The state store now updates its in-memory cache first and unconditionally,
+  and swallows a failed write after reporting it once. Losing persistence is a
+  mild degradation; losing every channel lookup is not. `isPersistent` is
+  surfaced in /server-status so the degraded mode is visible rather than
+  silent.
+
+- A Docker entrypoint takes ownership of the data directory as root, then
+  drops to the node user via su-exec. .gitattributes pins LF endings so the
+  script does not arrive in the container with a CRLF shebang.
+
+Also drops startCommand from railway.json so the image's own entrypoint runs.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>

@@ -81,6 +81,9 @@ export const serverStatusCommand: Command = {
         `Last setup: ${persisted.lastSetupAt ?? 'never'}`,
         `Triggered by: ${persisted.lastSetupBy ? `<@${persisted.lastSetupBy}>` : '—'}`,
         `Tracked IDs: ${Object.keys(persisted.roles).length} roles, ${Object.keys(persisted.categories).length} categories, ${Object.keys(persisted.channels).length} channels`,
+        state.isPersistent
+          ? 'State file: writable'
+          : '**State file: NOT writable** — running from memory. Resources still resolve by name, but the mapping is lost on restart. On a container host, the mounted volume is probably owned by root.',
         `Join role: @${SERVER.roles.find((r) => r.key === SERVER.joinRole)?.name ?? '?'} → @${SERVER.roles.find((r) => r.key === SERVER.verifiedRole)?.name ?? '?'} on verification`,
       ].join('\n'),
     });

@@ -1,0 +1,6 @@
+# Shell scripts must keep LF endings whatever the checkout platform.
+# A CRLF shebang inside a Linux container fails with "bad interpreter", and
+# this repository is edited on Windows and executed on Alpine.
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker-entrypoint.sh text eol=lf
